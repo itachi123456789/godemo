@@ -2,7 +2,7 @@
 
 set -e
 
-pull_dir=/home/go/src/godemo
+pull_dir=/home/go/src
 push_dir=/home/apps
 
 godemo=godemo
@@ -20,13 +20,13 @@ echo "building godemo"
 cd $pull_dir/$godemo
 go build
 
-md5sum $pull_dir/$godemo
+md5sum $pull_dir/$godemo/$godemo
 rm -rf $push_dir/$godemo/$godemo
 echo "copy"
-cp -r $pull_dir/$godemo $push_dir/$godemo
+cp -r $pull_dir/$godemo/$godemo $push_dir/$godemo
 
 echo "copy templates"
-cp -R $pull_dir/templates $push_dir/$godemo 
+cp -R $pull_dir/$godemo/templates $push_dir/$godemo 
 
 supervisorctl restart godemo
 }
