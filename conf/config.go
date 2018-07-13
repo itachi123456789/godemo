@@ -10,6 +10,8 @@ type Config struct {
 	ListenAddr string
 	Host       string
 	CcpayHost  string
+	Uid        string
+	Secret     string
 }
 
 var (

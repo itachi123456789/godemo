@@ -21,6 +21,8 @@ var (
 	PayUrl        string
 	QueryUrl      string
 	OrderCheckUrl string
+	UID           string
+	SECRET        string
 )
 
 type Product struct {
@@ -43,10 +45,10 @@ type PayData struct {
 
 var ProductMock map[string]Product
 
-const (
-	UID    = "227591459098857472"
-	SECRET = "7hvszwk1b182tvjzjpezi4hx9gvmkir0"
-)
+// const (
+// 	UID    = "227591459098857472"
+// 	SECRET = "7hvszwk1b182tvjzjpezi4hx9gvmkir0"
+// )
 
 func Init() {
 	NotifyUrl = conf.AppConfig.Host + conf.AppConfig.ListenAddr + "/notify"
@@ -54,6 +56,9 @@ func Init() {
 	PayUrl = conf.AppConfig.CcpayHost + "/ccpay/ach/pay"
 	QueryUrl = conf.AppConfig.CcpayHost + "/ccpay/ach/query"
 	OrderCheckUrl = conf.AppConfig.CcpayHost + "/ccpay/ach/order/check"
+
+	UID = conf.AppConfig.Uid
+	SECRET = conf.AppConfig.Secret
 
 	p := make(map[string]Product)
 

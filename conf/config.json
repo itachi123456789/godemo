@@ -1,5 +1,7 @@
 {
   "ListenAddr":":11111",
   "Host": "http://127.0.0.1",
-  "CcpayHost":"http://103.47.242.219:12010"
+  "CcpayHost":"http://127.0.0.1:12010",
+  "Uid":"227591459098857472",
+  "Secret":"7hvszwk1b182tvjzjpezi4hx9gvmkir0"
 }

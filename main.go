@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"godemo/conf"
 	"godemo/handler"
-	"godemo/module"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -31,12 +30,12 @@ func main() {
 
 	/* -------------- */
 
-	engine.GET("/order", module.OrderHandler)
+	engine.GET("/order", handler.OrderCheckHandler)
 
 	// engine.POST("/order/check", module.OrderCheckHandler)
 	// engine.POST("/test", module.TestHandler)
 
-	engine.POST("/notify", module.NotifyHandler)
+	engine.POST("/notify", handler.NotifyHandler)
 
 	// http.HandleFunc("/redirect", module.RedirectHandler)
 

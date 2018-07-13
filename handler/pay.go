@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -32,13 +33,13 @@ func PayHandler(c *gin.Context) {
 	orderuid := "u123"
 	orderid := newOrderID()
 
-	uid := c.PostForm("uid")
-	secret := c.PostForm("secret")
+	// uid := c.PostForm("uid")
+	// secret := c.PostForm("secret")
 
 	return_url := ReturnUrl
 	notify_url := NotifyUrl
 
-	values.Add("uid", uid)
+	values.Add("uid", UID)
 	values.Add("price", mock.Price)
 	values.Add("pay_type", payType)
 	values.Add("notify_url", notify_url)
@@ -53,7 +54,7 @@ func PayHandler(c *gin.Context) {
 
 	params := strings.Join(sv, "&")
 	md5sum.Write([]byte(params))
-	md5sum.Write([]byte(secret))
+	md5sum.Write([]byte(SECRET))
 	key := hex.EncodeToString(md5sum.Sum(nil))
 	// 注意：Token在安全上非常重要，一定不要显示在任何网页代码、网址参数中。只可以放在服务端。计算key时，先在服务端计算好，把计算出来的key传出来。严禁在客户端计算key，严禁在客户端存储Token。
 	fmt.Printf("key is %s\n", key)
@@ -126,8 +127,19 @@ func PayHandler(c *gin.Context) {
 
 }
 
+type QueryReq struct {
+	Id string `json:"id" binding:"required"`
+}
+
 func QueryHandler(c *gin.Context) {
-	outOrderid := c.PostForm("id")
+	var req QueryReq
+	err := c.BindJSON(&req)
+	if err != nil {
+		fmt.Printf("binging param err = %v\n", err)
+		return
+	}
+
+	outOrderid := req.Id
 
 	fmt.Printf("h5 params id = %s\n", outOrderid)
 
@@ -194,4 +206,17 @@ func QueryHandler(c *gin.Context) {
 	fmt.Printf("unmarshal:  %+v\n\n", res)
 
 	c.JSON(http.StatusOK, res)
+}
+
+func NotifyHandler(c *gin.Context) {
+	var args string
+	if c.Request.Header.Get("Content-Type") == "application/json" {
+		b, _ := ioutil.ReadAll(c.Request.Body)
+		args = string(b)
+	} else {
+		c.Request.ParseForm()
+		args = c.Request.Form.Encode()
+	}
+	fmt.Printf("notify: %+v\n", args)
+	c.JSON(http.StatusOK, "success")
 }
