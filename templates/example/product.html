@@ -1,0 +1,28 @@
+<html>
+    <body>
+        <form action="/pay" method="POST">
+            商户UID: 
+            <input type="text" name="uid" value="227591459098857472"><br>
+            Secret: 
+            <input type="text" name="secret" value="7hvszwk1b182tvjzjpezi4hx9gvmkir0"><br>
+
+            支付类型: 
+            支付宝：<input type="radio" name="pay_type" value="100">
+            微信：<input type="radio" name="pay_type" value="200" checked="checked"><br>
+
+
+
+            0.1 元
+            <input type="radio" name="product" value="1" checked="checked" />  <br />
+            0.2 元
+            <input type="radio" name="product" value="2"/>  <br />
+            1.0 元
+            <input type="radio" name="product" value="4"/>  <br />
+            10 元
+            <input type="radio" name="product" value="3"/>  <br />
+            <br />
+
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
