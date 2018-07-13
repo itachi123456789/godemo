@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"godemo/conf"
+	"godemo/handler"
 	"godemo/module"
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,20 +14,31 @@ func main() {
 	fmt.Println("Pay Server.")
 	engine := gin.New()
 	conf.LoadConf()
-	module.Init()
+	handler.Init()
 
-	engine.LoadHTMLGlob("templates/*.html")
+	engine.LoadHTMLGlob("templates/*/*.html")
+	engine.Static("/static", "./templates/qr/static")
 
-	engine.GET("/", module.IndexHandler)
+	// 商品列表
+	engine.GET("/", handler.ProductHandler)
+	engine.Any("/error", handler.ErrorHandler)
+
+	engine.GET("/qr", handler.QrHandler)
+
+	engine.POST("/pay", handler.PayHandler)
+
+	engine.POST("/order/query", handler.QueryHandler)
+
+	/* -------------- */
+
 	engine.GET("/order", module.OrderHandler)
 
-	engine.POST("/order/check", module.OrderCheckHandler)
-	engine.POST("/test", module.TestHandler)
+	// engine.POST("/order/check", module.OrderCheckHandler)
+	// engine.POST("/test", module.TestHandler)
 
-	engine.Any("/pay", module.PayHandler)
 	engine.POST("/notify", module.NotifyHandler)
 
-	http.HandleFunc("/redirect", module.RedirectHandler)
+	// http.HandleFunc("/redirect", module.RedirectHandler)
 
 	err := engine.Run(conf.AppConfig.ListenAddr)
 	if err != nil {
