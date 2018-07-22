@@ -63,7 +63,7 @@ func Init() {
 	p := make(map[string]Product)
 
 	p["1"] = Product{Price: "10", Goodsname: "0.1 元"}
-	p["2"] = Product{"20", "0.2 元"}
+	p["2"] = Product{"20", ""}
 	p["3"] = Product{"1000", "10 元"}
 	p["4"] = Product{"100", "1.0 元"}
 

@@ -11,7 +11,7 @@ date=`date +%F_%T`
 
 cd `dirname $0`;pwd
 help(){
-echo "1.测试服eating_chick主程序更新：./deploy_ec_test.sh application"
+echo "1.测试服ccpay ./deploy_ec_test.sh application"
 }
 
 godemo(){
