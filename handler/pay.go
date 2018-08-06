@@ -6,15 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	bytes2 "bytes"
 
 	"github.com/gin-gonic/gin"
+	jsoniter "github.com/json-iterator/go"
 )
+
+var JsonFast = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func QrHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", nil)
@@ -208,15 +211,72 @@ func QueryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+type CallbackReq struct {
+	UID       string `json:"uid"`
+	TransID   string `json:"transid"`
+	OrderID   string `json:"orderid"`
+	Transtime int64  `json:"transtime,string"`
+	Price     int    `json:"price,string"`
+	PayType   int    `json:"paytype,string"`
+	Extra     string `json:"extra"`
+	Status    int    `json:"status,string"`
+	Version   string `json:"version"`
+	Key       string `json:"key"`
+}
+
+var count []int
+
 func NotifyHandler(c *gin.Context) {
-	var args string
-	if c.Request.Header.Get("Content-Type") == "application/json" {
-		b, _ := ioutil.ReadAll(c.Request.Body)
-		args = string(b)
-	} else {
-		c.Request.ParseForm()
-		args = c.Request.Form.Encode()
+	req := new(CallbackReq)
+	err := c.BindJSON(req)
+	if err != nil {
+		fmt.Println("req params err:", err)
+		return
 	}
-	fmt.Printf("notify: %+v\n", args)
-	c.JSON(http.StatusOK, "success")
+	// count = append(count, 1)
+	fmt.Printf("notify: %+v\n", req)
+
+	key, err := GenMd5ForParams(req, SECRET)
+	if err != nil {
+		fmt.Println("gen md5 err:", err)
+		return
+	}
+	if key != req.Key {
+		fmt.Println("签名验证失败, mykey =", key)
+		return
+	}
+
+	time.Sleep(time.Second * 2)
+
+	// c.JSON(http.StatusBadRequest, "fail")
+	c.String(http.StatusOK, "success")
+	// c.Writer(http.StatusOK, "success")
+}
+
+func GenMd5ForParams(info interface{}, secret string) (string, error) {
+	var infoMap = make(map[string]string)
+	b, _ := JsonFast.Marshal(info)
+	err := JsonFast.Unmarshal(b, &infoMap)
+	if err != nil {
+		return "", err
+	}
+
+	values := url.Values{}
+	for k, v := range infoMap {
+		if strings.TrimSpace(v) == "" || k == "key" {
+			continue
+		}
+		// fmt.Println("add k = ", k, " v = ", v)
+		values.Add(k, v)
+	}
+	sv := GetKeysAndValuesBySortKeys(values)
+	md5sum := md5.New()
+
+	params := strings.Join(sv, "&")
+	// fmt.Printf("via params:%s\n", params+secret)
+
+	md5sum.Write([]byte(params))
+	md5sum.Write([]byte(secret))
+
+	return hex.EncodeToString(md5sum.Sum([]byte(nil))), nil
 }
